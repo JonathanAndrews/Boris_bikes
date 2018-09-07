@@ -11,8 +11,10 @@ class DockingStation
 
   def release_bike
     fail 'not enough bikes' unless empty?
-    fail 'Sorry, all the bikes are broken' unless rotate_bikes
-    @array_of_bikes.pop
+    @array_of_bikes.each do |bike|
+      return @array_of_bikes.delete(bike) if bike.working?
+    end
+    fail 'Sorry, all the bikes are broken'
   end
 
   def dock_bike(bike)
@@ -27,17 +29,6 @@ class DockingStation
   end
 
   private
-
-  def rotate_bikes
-    for i in 0...@array_of_bikes.count do
-      if @array_of_bikes[-1].working?
-        return true
-      else
-        @array_of_bikes.rotate!
-      end
-    end
-    return false
-  end
 
   def full?
     @array_of_bikes.count >= @capacity
