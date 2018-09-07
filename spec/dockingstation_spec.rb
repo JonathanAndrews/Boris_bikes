@@ -2,7 +2,10 @@ require 'dockingstation'
 require 'bike'
 
 describe DockingStation do
+
   let(:double_bike) { double :bike }
+  let(:broken_bike) { double :bike }
+
   it 'responds to method call release_bike' do
     expect(DockingStation.new()).to respond_to(:release_bike)
   end
@@ -68,7 +71,7 @@ describe DockingStation do
 
   it "release unbroken bikes only" do
     allow(double_bike).to receive(:working?).and_return(true)
-    allow(double_bike).to receive(:broken).and_return(true)
+    allow(double_bike).to receive(:broken)
     good_bike = double_bike
     subject.dock_bike(good_bike)
     5.times do
@@ -76,4 +79,25 @@ describe DockingStation do
     end
     expect(subject.release_bike).to eq(good_bike)
   end
+
+  it "should release broken bikes for repair" do
+    allow(double_bike).to receive(:broken)
+    allow(double_bike).to receive(:working?).and_return(false)
+    station = DockingStation.new
+    station.report_broken_and_dock(double_bike)
+    expect(station.release_broken_bikes).to eq [double_bike]
+  end
+
+  it "should release broken bikes for repair when there is also a working bike" do
+    allow(double_bike).to receive(:broken)
+    allow(double_bike).to receive(:working?).and_return(true)
+    allow(broken_bike).to receive(:broken)
+    allow(broken_bike).to receive(:working?).and_return(false)
+    station = DockingStation.new
+    station.report_broken_and_dock(broken_bike)
+    station.dock_bike(double_bike)
+    expect(station.release_broken_bikes).to eq [broken_bike]
+  end
+
+
 end
