@@ -28,6 +28,12 @@ class DockingStation
     @array_of_bikes << bike
   end
 
+  def release_broken_bikes
+    broken_bikes = @array_of_bikes.reject { |bike| bike.working? }
+    @array_of_bikes.select! { |bike| bike.working? }
+    broken_bikes
+  end
+
   private
 
   def full?
