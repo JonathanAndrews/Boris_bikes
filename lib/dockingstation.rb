@@ -29,9 +29,8 @@ class DockingStation
   end
 
   def release_broken_bikes
-    broken_bikes = @array_of_bikes.reject { |bike| bike.working? }
-    @array_of_bikes.select! { |bike| bike.working? }
-    broken_bikes
+    broken_bikes, @array_of_bikes = @array_of_bikes.partition { |bike| not bike.working? }
+    return broken_bikes
   end
 
   private
